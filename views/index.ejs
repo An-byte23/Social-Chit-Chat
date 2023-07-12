@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social ChitChat</title>
+  <link rel="stylesheet" href="../stylesheets/style.css">
+</head>
+<body>
+  <div class="chatSec">
+    <div class="brand">
+      <img id="img" src="../images/chat-removebg-preview.png" alt="">
+      <h1>Social ChitChat</h1>
+    </div>
+    <div class="messageArea">
+      <!-- <div class="incoming message">
+        <h4>Anu</h4>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Error, eligendi!</p>
+      </div>
+      <div class="outgoing message">
+        <h4>Anu</h4>
+        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Error, eligendi!</p>
+      </div> -->
+    </div>
+    <div>
+      <textarea  id="textarea"  rows="1" placeholder="Write a message.."></textarea>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js" integrity="sha512-xbQU0+iHqhVt7VIXi6vBJKPh3IQBF5B84sSHdjKiSccyX/1ZI7Vnkt2/8y8uruj63/DVmCxfUNohPNruthTEQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        let name;
+        let txt=document.querySelector('#textarea')
+        let msgArea=document.querySelector('.messageArea')
+        do{
+          name=prompt('Please enter your name !!')
+        }while(!name)
+        txt.addEventListener('keyup',function(e){
+          if(e.key==='Enter'){
+            sendMessage(e.target.value)
+          }
+        })
+        function sendMessage(mesg){
+          let msg={
+            user:name,
+            message:mesg.trim()
+          }
+          // Append
+          appendMessage(msg,'outgoing')
+          txt.value=''
+          scrollToBottom()
+          // send to server
+          socket.emit('message',msg)
+        }
+        function appendMessage(msg,type){
+          let maindiv=document.createElement('div')
+          let className=type
+          maindiv.classList.add(className,'message')
+
+          let clutter=`
+            <h4>${msg.user}</h4>
+            <p>${msg.message}</p>
+          `
+          maindiv.innerHTML =clutter
+          msgArea.appendChild(maindiv)
+        }
+
+        // Receive message
+        socket.on('message',function(msg){
+          appendMessage(msg,'incoming')
+          scrollToBottom()
+        })
+
+        function scrollToBottom(){
+          msgArea.scrollTop=msgArea.scrollHeight
+        }
+
+    </script>
+</body>
+</html>
